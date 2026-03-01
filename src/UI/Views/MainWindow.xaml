@@ -1,0 +1,31 @@
+<Window x:Class="UI.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Title="MAIN_SYSTEM" Height="900" Width="1400">
+    <DockPanel>
+        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="8">
+            <Button Content="Создать проект" Command="{Binding CreateProjectCommand}" Margin="0,0,8,0"/>
+            <Button Content="Пересчитать" Command="{Binding RecalculateCommand}" Margin="0,0,8,0"/>
+            <DatePicker SelectedDate="{Binding From}" Margin="0,0,8,0"/>
+            <DatePicker SelectedDate="{Binding To}"/>
+        </StackPanel>
+
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <StackPanel Margin="8">
+                <Expander Header="Products" IsExpanded="True"><DataGrid ItemsSource="{Binding Products}" AutoGenerateColumns="True"/></Expander>
+                <Expander Header="FX Rates"><DataGrid ItemsSource="{Binding FxRates}" AutoGenerateColumns="True"/></Expander>
+                <Expander Header="Purchases"><DataGrid ItemsSource="{Binding Purchases}" AutoGenerateColumns="True"/></Expander>
+                <Expander Header="Logistics"><DataGrid ItemsSource="{Binding Logistics}" AutoGenerateColumns="True"/></Expander>
+                <Expander Header="Sales"><DataGrid ItemsSource="{Binding Sales}" AutoGenerateColumns="True"/></Expander>
+                <Expander Header="Marketing"><DataGrid ItemsSource="{Binding Marketing}" AutoGenerateColumns="True"/></Expander>
+                <Expander Header="Other Costs"><DataGrid ItemsSource="{Binding OtherCosts}" AutoGenerateColumns="True"/></Expander>
+                <Expander Header="Inventory"><DataGrid ItemsSource="{Binding Inventory}" AutoGenerateColumns="True" IsReadOnly="True"/></Expander>
+                <Expander Header="Unit Economics"><DataGrid ItemsSource="{Binding UnitEconomics}" AutoGenerateColumns="True" IsReadOnly="True"/></Expander>
+                <Border Background="#222" Padding="8" Margin="0,10,0,0"><TextBlock Foreground="White" FontSize="18" Text="P&L + KPI section (bound via charts/cards in next iteration)"/></Border>
+            </StackPanel>
+        </ScrollViewer>
+    </DockPanel>
+</Window>
