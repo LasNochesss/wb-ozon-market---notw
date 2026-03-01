@@ -4,7 +4,23 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        Title="MAIN_SYSTEM" Height="900" Width="1650" Background="#F6F8FC">
+        Title="MAIN_SYSTEM" Height="900" Width="1650" Background="#F6F8FC"
+        ToolTipService.InitialShowDelay="400"
+        ToolTipService.BetweenShowDelay="200"
+        ToolTipService.ShowDuration="8000">
+
+    <Window.Resources>
+        <Style TargetType="DataGridRow">
+            <Setter Property="Background" Value="White"/>
+            <Style.Triggers>
+                <Trigger Property="AlternationIndex" Value="1"><Setter Property="Background" Value="#F8FAFC"/></Trigger>
+                <Trigger Property="IsMouseOver" Value="True"><Setter Property="Background" Value="#EEF2FF"/></Trigger>
+                <Trigger Property="IsSelected" Value="True"><Setter Property="Background" Value="#E0E7FF"/></Trigger>
+            </Style.Triggers>
+        </Style>
+        <Style TargetType="DataGridCell"><Setter Property="Padding" Value="8,5"/></Style>
+    </Window.Resources>
+
     <Grid Margin="12">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -14,33 +30,30 @@
         </Grid.RowDefinitions>
 
         <DockPanel Grid.Row="0" Margin="0,0,0,10">
-            <Button DockPanel.Dock="Left" Content="⚙️" Width="36" Height="36" FontSize="16" Command="{Binding OpenSettingsCommand}" ToolTip="Настройки"/>
+            <Button DockPanel.Dock="Left" Content="⚙️" Width="36" Height="36" FontSize="16" Command="{Binding OpenSettingsCommand}" ToolTip="Open application settings"/>
             <StackPanel Orientation="Horizontal" Margin="10,0,0,0">
-                <Button Content="Создать проект" Command="{Binding CreateProjectCommand}" Margin="0,0,8,0"/>
-                <Button Content="Пересчитать" Command="{Binding RecalculateCommand}" Margin="0,0,8,0"/>
-                <TextBlock VerticalAlignment="Center" Margin="8,0,4,0" Text="Период: с"/>
-                <DatePicker SelectedDate="{Binding From}" Margin="0,0,8,0"/>
-                <TextBlock VerticalAlignment="Center" Margin="8,0,4,0" Text="по"/>
-                <DatePicker SelectedDate="{Binding To}"/>
+                <Button Content="Создать проект" Command="{Binding CreateProjectCommand}" Margin="0,0,8,0" ToolTip="Create a new project and clear current data"/>
+                <Button Content="Пересчитать" Command="{Binding RecalculateCommand}" Margin="0,0,8,0" ToolTip="Recalculate unit economics and P&amp;L/KPI based on current data"/>
+                <TextBlock VerticalAlignment="Center" Margin="8,0,4,0" Text="Период: с" ToolTip="Filter by date range"/>
+                <DatePicker SelectedDate="{Binding From}" Margin="0,0,8,0" ToolTip="Filter by date range"/>
+                <TextBlock VerticalAlignment="Center" Margin="8,0,4,0" Text="по" ToolTip="Filter by date range"/>
+                <DatePicker SelectedDate="{Binding To}" ToolTip="Filter by date range"/>
             </StackPanel>
         </DockPanel>
 
         <Border Grid.Row="1" Background="White" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="10" Padding="10" Margin="0,0,0,10">
             <StackPanel Orientation="Horizontal">
                 <TextBlock Text="Путь: " Foreground="#64748B"/>
-                <TextBlock Text="{Binding CurrentExcelPath}" FontWeight="SemiBold"/>
+                <TextBlock Text="{Binding CurrentExcelPath}" FontWeight="SemiBold" ToolTip="Current project file location"/>
                 <TextBlock Text="   |   Статус: " Foreground="#64748B" Margin="14,0,0,0"/>
-                <TextBlock Text="{Binding SaveState}"/>
+                <TextBlock Text="{Binding SaveState}" ToolTip="Unsaved changes / Saved"/>
             </StackPanel>
         </Border>
 
         <TabControl Grid.Row="2">
             <TabItem Header="Файлы">
                 <Grid Margin="12">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="*"/>
-                    </Grid.RowDefinitions>
+                    <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>
                     <WrapPanel Margin="0,0,0,10">
                         <Button Content="Новый" Command="{Binding NewFileCommand}" Margin="0,0,8,8"/>
                         <Button Content="Открыть (.xlsx)" Command="{Binding OpenExcelCommand}" Margin="0,0,8,8"/>
@@ -49,167 +62,23 @@
                         <Button Content="Экспорт" Command="{Binding ExportExcelCommand}" Margin="0,0,8,8"/>
                         <Button Content="Импорт" Command="{Binding ImportExcelCommand}" Margin="0,0,8,8"/>
                     </WrapPanel>
-                    <DataGrid Grid.Row="1" ItemsSource="{Binding ValidationLog}" HeadersVisibility="None"/>
+                    <DataGrid Grid.Row="1" ItemsSource="{Binding ValidationLog}" HeadersVisibility="None" AlternationCount="2" IsReadOnly="True"/>
                 </Grid>
             </TabItem>
 
-            <TabItem Header="Товары">
-                <DataGrid ItemsSource="{Binding Products}" AutoGenerateColumns="False">
-                    <DataGrid.Columns>
-                        <DataGridTextColumn Header="SKU" Binding="{Binding Sku}"/>
-                        <DataGridTextColumn Header="Название" Binding="{Binding Name}"/>
-                        <DataGridTextColumn Header="Категория" Binding="{Binding Category}"/>
-                        <DataGridTextColumn Header="Целевая закупка (CNY)" Binding="{Binding PurchaseTargetCny}"/>
-                        <DataGridTextColumn Header="Вес (кг)" Binding="{Binding WeightKg}"/>
-                        <DataGridTextColumn Header="Габариты" Binding="{Binding DimensionsText}"/>
-                        <DataGridTextColumn Header="Упаковка (руб/шт)" Binding="{Binding PackagingRubPerUnit}"/>
-                        <DataGridTextColumn Header="Мин. маржа (%)" Binding="{Binding MinMarginPct}"/>
-                        <DataGridTextColumn Header="Целевая цена (руб)" Binding="{Binding TargetPriceRub}"/>
-                        <DataGridTextColumn Header="Статус" Binding="{Binding Status}"/>
-                    </DataGrid.Columns>
-                </DataGrid>
-            </TabItem>
-
-            <TabItem Header="Курсы валют">
-                <DataGrid ItemsSource="{Binding FxRates}" AutoGenerateColumns="False">
-                    <DataGrid.Columns>
-                        <DataGridTextColumn Header="Дата курса" Binding="{Binding FxDate, StringFormat=dd.MM.yyyy}"/>
-                        <DataGridTextColumn Header="Курс CNY→RUB" Binding="{Binding CnyToRub}"/>
-                    </DataGrid.Columns>
-                </DataGrid>
-            </TabItem>
-
-            <TabItem Header="Закупки">
-                <DataGrid ItemsSource="{Binding Purchases}" AutoGenerateColumns="False">
-                    <DataGrid.Columns>
-                        <DataGridTextColumn Header="ID закупки" Binding="{Binding PurchaseId}"/>
-                        <DataGridTextColumn Header="Дата оплаты" Binding="{Binding PaidDate, StringFormat=dd.MM.yyyy}"/>
-                        <DataGridTextColumn Header="SKU" Binding="{Binding Sku}"/>
-                        <DataGridTextColumn Header="Количество" Binding="{Binding Qty}"/>
-                        <DataGridTextColumn Header="Цена за единицу (CNY)" Binding="{Binding UnitPriceCny}"/>
-                        <DataGridTextColumn Header="Комиссии (CNY)" Binding="{Binding FeesCny}"/>
-                    </DataGrid.Columns>
-                </DataGrid>
-            </TabItem>
-
-            <TabItem Header="Логистика">
-                <DataGrid ItemsSource="{Binding Logistics}" AutoGenerateColumns="False">
-                    <DataGrid.Columns>
-                        <DataGridTextColumn Header="ID логистики" Binding="{Binding LogId}"/>
-                        <DataGridTextColumn Header="ID закупки" Binding="{Binding PurchaseId}"/>
-                        <DataGridTextColumn Header="Доставка (руб)" Binding="{Binding DeliveryRub}"/>
-                        <DataGridTextColumn Header="Таможня (руб)" Binding="{Binding CustomsRub}"/>
-                        <DataGridTextColumn Header="Прочее (руб)" Binding="{Binding OtherRub}"/>
-                    </DataGrid.Columns>
-                </DataGrid>
-            </TabItem>
-
-            <TabItem Header="Продажи">
-                <DataGrid ItemsSource="{Binding Sales}" AutoGenerateColumns="False">
-                    <DataGrid.Columns>
-                        <DataGridTextColumn Header="ID заказа" Binding="{Binding OrderId}"/>
-                        <DataGridTextColumn Header="Дата продажи" Binding="{Binding SaleDate, StringFormat=dd.MM.yyyy}"/>
-                        <DataGridTextColumn Header="Маркетплейс" Binding="{Binding Marketplace}"/>
-                        <DataGridTextColumn Header="Тип продажи" Binding="{Binding SaleType}"/>
-                        <DataGridTextColumn Header="SKU" Binding="{Binding Sku}"/>
-                        <DataGridTextColumn Header="Количество" Binding="{Binding Qty}"/>
-                        <DataGridTextColumn Header="Цена (руб)" Binding="{Binding PriceRub}"/>
-                        <DataGridTextColumn Header="Комиссия (руб)" Binding="{Binding CommissionRub}"/>
-                        <DataGridTextColumn Header="Логистика МП (руб)" Binding="{Binding MpLogisticsRub}"/>
-                        <DataGridTextColumn Header="Статус" Binding="{Binding Status}"/>
-                    </DataGrid.Columns>
-                </DataGrid>
-            </TabItem>
-
-            <TabItem Header="Маркетинг">
-                <DataGrid ItemsSource="{Binding Marketing}" AutoGenerateColumns="False">
-                    <DataGrid.Columns>
-                        <DataGridTextColumn Header="ID маркетинга" Binding="{Binding MarketingId}"/>
-                        <DataGridTextColumn Header="Дата" Binding="{Binding Date, StringFormat=dd.MM.yyyy}"/>
-                        <DataGridTextColumn Header="Маркетплейс" Binding="{Binding Marketplace}"/>
-                        <DataGridTextColumn Header="SKU" Binding="{Binding Sku}"/>
-                        <DataGridTextColumn Header="Сумма (руб)" Binding="{Binding AmountRub}"/>
-                        <DataGridTextColumn Header="Тип" Binding="{Binding Type}"/>
-                    </DataGrid.Columns>
-                </DataGrid>
-            </TabItem>
-
-            <TabItem Header="Прочие расходы">
-                <DataGrid ItemsSource="{Binding OtherCosts}" AutoGenerateColumns="False">
-                    <DataGrid.Columns>
-                        <DataGridTextColumn Header="ID расхода" Binding="{Binding CostId}"/>
-                        <DataGridTextColumn Header="Дата" Binding="{Binding Date, StringFormat=dd.MM.yyyy}"/>
-                        <DataGridTextColumn Header="Тип расхода" Binding="{Binding CostType}"/>
-                        <DataGridTextColumn Header="Сумма (руб)" Binding="{Binding AmountRub}"/>
-                        <DataGridTextColumn Header="Комментарий" Binding="{Binding Comment}"/>
-                    </DataGrid.Columns>
-                </DataGrid>
-            </TabItem>
-
-            <TabItem Header="Склад">
-                <DataGrid ItemsSource="{Binding Inventory}" AutoGenerateColumns="False" IsReadOnly="True">
-                    <DataGrid.Columns>
-                        <DataGridTextColumn Header="SKU" Binding="{Binding Sku}"/>
-                        <DataGridTextColumn Header="Поступило (шт)" Binding="{Binding TotalInQty}"/>
-                        <DataGridTextColumn Header="Выбыло (шт)" Binding="{Binding TotalOutQty}"/>
-                        <DataGridTextColumn Header="Возвраты (шт)" Binding="{Binding TotalReturnQty}"/>
-                        <DataGridTextColumn Header="Остаток (шт)" Binding="{Binding StockQty}"/>
-                        <DataGridTextColumn Header="Ср. себестоимость (руб/шт)" Binding="{Binding AvgCostRubPerUnit}"/>
-                        <DataGridTextColumn Header="Стоимость остатков (руб)" Binding="{Binding StockValueRub}"/>
-                    </DataGrid.Columns>
-                </DataGrid>
-            </TabItem>
-
-            <TabItem Header="Юнит-экономика">
-                <DataGrid ItemsSource="{Binding UnitEconomics}" AutoGenerateColumns="False" IsReadOnly="True">
-                    <DataGrid.Columns>
-                        <DataGridTextColumn Header="SKU" Binding="{Binding Sku}"/>
-                        <DataGridTextColumn Header="Ср. цена продажи (руб)" Binding="{Binding AvgSalePrice}"/>
-                        <DataGridTextColumn Header="Ср. комиссия (руб/шт)" Binding="{Binding AvgCommissionPerUnit}"/>
-                        <DataGridTextColumn Header="Ср. логистика МП (руб/шт)" Binding="{Binding AvgMpLogisticsPerUnit}"/>
-                        <DataGridTextColumn Header="Реклама (руб/шт)" Binding="{Binding AdsPerUnit}"/>
-                        <DataGridTextColumn Header="Ср. себестоимость (руб/шт)" Binding="{Binding AvgCostUnit}"/>
-                        <DataGridTextColumn Header="Упаковка (руб/шт)" Binding="{Binding PackagingPerUnit}"/>
-                        <DataGridTextColumn Header="Полная себестоимость (руб/шт)" Binding="{Binding FullCostPerUnit}"/>
-                        <DataGridTextColumn Header="Валовая прибыль (руб/шт)" Binding="{Binding GrossProfitPerUnit}"/>
-                        <DataGridTextColumn Header="Чистая прибыль (руб/шт)" Binding="{Binding NetProfitPerUnit}"/>
-                        <DataGridTextColumn Header="ROI (%)" Binding="{Binding RoiPct}"/>
-                        <DataGridTextColumn Header="Доля самовыкупа (%)" Binding="{Binding SelfBuySharePct}"/>
-                    </DataGrid.Columns>
-                </DataGrid>
-            </TabItem>
-
-            <TabItem Header="P&amp;L + KPI">
-                <StackPanel Margin="12">
-                    <TextBlock FontSize="20" FontWeight="SemiBold" Text="P&amp;L + KPI" ToolTip="Прибыль и убытки + ключевые показатели"/>
-                    <TextBlock Foreground="#64748B" Text="Карточки KPI и аналитические графики" Margin="0,6,0,12"/>
-                    <UniformGrid Columns="4" Margin="0,0,0,12">
-                        <Border Margin="0,0,8,0" Padding="12" Background="#F8FAFC" BorderBrush="#E2E8F0" BorderThickness="1"><StackPanel><TextBlock Text="Выручка"/><TextBlock Text="—" FontSize="24"/></StackPanel></Border>
-                        <Border Margin="0,0,8,0" Padding="12" Background="#F8FAFC" BorderBrush="#E2E8F0" BorderThickness="1"><StackPanel><TextBlock Text="Чистая прибыль"/><TextBlock Text="—" FontSize="24"/></StackPanel></Border>
-                        <Border Margin="0,0,8,0" Padding="12" Background="#F8FAFC" BorderBrush="#E2E8F0" BorderThickness="1"><StackPanel><TextBlock Text="Маржа"/><TextBlock Text="—" FontSize="24"/></StackPanel></Border>
-                        <Border Padding="12" Background="#F8FAFC" BorderBrush="#E2E8F0" BorderThickness="1"><StackPanel><TextBlock Text="ROI"/><TextBlock Text="—" FontSize="24"/></StackPanel></Border>
-                    </UniformGrid>
-                </StackPanel>
-            </TabItem>
-
-            <TabItem Header="Аналитика/Диаграммы">
-                <Grid Margin="12">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="*"/>
-                    </Grid.RowDefinitions>
-                    <TextBlock Text="Пользовательские таблицы и диаграммы (линейная/столбчатая/круговая)" FontWeight="SemiBold"/>
-                    <UniformGrid Grid.Row="1" Columns="3" Margin="0,12,0,0">
-                        <Border Margin="0,0,8,0" Background="#F8FAFC" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="10"><TextBlock Text="Линейная диаграмма" HorizontalAlignment="Center" VerticalAlignment="Center"/></Border>
-                        <Border Margin="0,0,8,0" Background="#F8FAFC" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="10"><TextBlock Text="Столбчатая диаграмма" HorizontalAlignment="Center" VerticalAlignment="Center"/></Border>
-                        <Border Background="#F8FAFC" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="10"><TextBlock Text="Круговая диаграмма" HorizontalAlignment="Center" VerticalAlignment="Center"/></Border>
-                    </UniformGrid>
-                </Grid>
-            </TabItem>
+            <TabItem Header="Товары"><DataGrid ItemsSource="{Binding Products}" AutoGenerateColumns="False" AlternationCount="2"><DataGrid.Columns><DataGridTextColumn Header="SKU" Binding="{Binding Sku}"/><DataGridTextColumn Header="Название" Binding="{Binding Name}"/><DataGridTextColumn Header="Категория" Binding="{Binding Category}"/><DataGridTextColumn Header="Целевая закупка (CNY)" Binding="{Binding PurchaseTargetCny}"/><DataGridTextColumn Header="Вес (кг)" Binding="{Binding WeightKg}"/><DataGridTextColumn Header="Габариты" Binding="{Binding DimensionsText}"/><DataGridTextColumn Header="Упаковка (руб/шт)" Binding="{Binding PackagingRubPerUnit}"/><DataGridTextColumn Header="Мин. маржа (%)" Binding="{Binding MinMarginPct}"/><DataGridTextColumn Header="Целевая цена (руб)" Binding="{Binding TargetPriceRub}"/><DataGridTextColumn Header="Статус" Binding="{Binding Status}"/></DataGrid.Columns></DataGrid></TabItem>
+            <TabItem Header="Курсы валют"><DataGrid ItemsSource="{Binding FxRates}" AutoGenerateColumns="False" AlternationCount="2"><DataGrid.Columns><DataGridTextColumn Header="Дата курса" Binding="{Binding FxDate, StringFormat=dd.MM.yyyy}"/><DataGridTextColumn Header="Курс CNY→RUB" Binding="{Binding CnyToRub}"/></DataGrid.Columns></DataGrid></TabItem>
+            <TabItem Header="Закупки"><DataGrid ItemsSource="{Binding Purchases}" AutoGenerateColumns="False" AlternationCount="2"><DataGrid.Columns><DataGridTextColumn Header="ID закупки" Binding="{Binding PurchaseId}"/><DataGridTextColumn Header="Дата оплаты" Binding="{Binding PaidDate, StringFormat=dd.MM.yyyy}"/><DataGridTextColumn Header="SKU" Binding="{Binding Sku}"/><DataGridTextColumn Header="Количество" Binding="{Binding Qty}"/><DataGridTextColumn Header="Цена за единицу (CNY)" Binding="{Binding UnitPriceCny}"/><DataGridTextColumn Header="Комиссии (CNY)" Binding="{Binding FeesCny}"/></DataGrid.Columns></DataGrid></TabItem>
+            <TabItem Header="Логистика"><DataGrid ItemsSource="{Binding Logistics}" AutoGenerateColumns="False" AlternationCount="2"><DataGrid.Columns><DataGridTextColumn Header="ID логистики" Binding="{Binding LogId}"/><DataGridTextColumn Header="ID закупки" Binding="{Binding PurchaseId}"/><DataGridTextColumn Header="Доставка (руб)" Binding="{Binding DeliveryRub}"/><DataGridTextColumn Header="Таможня (руб)" Binding="{Binding CustomsRub}"/><DataGridTextColumn Header="Прочее (руб)" Binding="{Binding OtherRub}"/></DataGrid.Columns></DataGrid></TabItem>
+            <TabItem Header="Продажи"><DataGrid ItemsSource="{Binding Sales}" AutoGenerateColumns="False" AlternationCount="2"><DataGrid.Columns><DataGridTextColumn Header="ID заказа" Binding="{Binding OrderId}"/><DataGridTextColumn Header="Дата продажи" Binding="{Binding SaleDate, StringFormat=dd.MM.yyyy}"/><DataGridTextColumn Header="Маркетплейс" Binding="{Binding Marketplace}"/><DataGridTextColumn Header="Тип продажи" Binding="{Binding SaleType}"/><DataGridTextColumn Header="SKU" Binding="{Binding Sku}"/><DataGridTextColumn Header="Количество" Binding="{Binding Qty}"/><DataGridTextColumn Header="Цена (руб)" Binding="{Binding PriceRub}"/><DataGridTextColumn Header="Комиссия (руб)" Binding="{Binding CommissionRub}"/><DataGridTextColumn Header="Логистика МП (руб)" Binding="{Binding MpLogisticsRub}"/><DataGridTextColumn Header="Статус" Binding="{Binding Status}"/></DataGrid.Columns></DataGrid></TabItem>
+            <TabItem Header="Маркетинг"><DataGrid ItemsSource="{Binding Marketing}" AutoGenerateColumns="False" AlternationCount="2"><DataGrid.Columns><DataGridTextColumn Header="ID маркетинга" Binding="{Binding MarketingId}"/><DataGridTextColumn Header="Дата" Binding="{Binding Date, StringFormat=dd.MM.yyyy}"/><DataGridTextColumn Header="Маркетплейс" Binding="{Binding Marketplace}"/><DataGridTextColumn Header="SKU" Binding="{Binding Sku}"/><DataGridTextColumn Header="Сумма (руб)" Binding="{Binding AmountRub}"/><DataGridTextColumn Header="Тип" Binding="{Binding Type}"/></DataGrid.Columns></DataGrid></TabItem>
+            <TabItem Header="Прочие расходы"><DataGrid ItemsSource="{Binding OtherCosts}" AutoGenerateColumns="False" AlternationCount="2"><DataGrid.Columns><DataGridTextColumn Header="ID расхода" Binding="{Binding CostId}"/><DataGridTextColumn Header="Дата" Binding="{Binding Date, StringFormat=dd.MM.yyyy}"/><DataGridTextColumn Header="Тип расхода" Binding="{Binding CostType}"/><DataGridTextColumn Header="Сумма (руб)" Binding="{Binding AmountRub}"/><DataGridTextColumn Header="Комментарий" Binding="{Binding Comment}"/></DataGrid.Columns></DataGrid></TabItem>
+            <TabItem Header="Склад"><DataGrid ItemsSource="{Binding Inventory}" AutoGenerateColumns="False" IsReadOnly="True" AlternationCount="2"><DataGrid.Columns><DataGridTextColumn Header="SKU" Binding="{Binding Sku}"/><DataGridTextColumn Header="Поступило (шт)" Binding="{Binding TotalInQty}"/><DataGridTextColumn Header="Выбыло (шт)" Binding="{Binding TotalOutQty}"/><DataGridTextColumn Header="Возвраты (шт)" Binding="{Binding TotalReturnQty}"/><DataGridTextColumn Header="Остаток (шт)" Binding="{Binding StockQty}"/><DataGridTextColumn Header="Ср. себестоимость (руб/шт)" Binding="{Binding AvgCostRubPerUnit}"/><DataGridTextColumn Header="Стоимость остатков (руб)" Binding="{Binding StockValueRub}"/></DataGrid.Columns></DataGrid></TabItem>
+            <TabItem Header="Юнит-экономика"><DataGrid ItemsSource="{Binding UnitEconomics}" AutoGenerateColumns="False" IsReadOnly="True" AlternationCount="2"><DataGrid.Columns><DataGridTextColumn Header="SKU" Binding="{Binding Sku}"/><DataGridTextColumn Header="Ср. цена продажи (руб)" Binding="{Binding AvgSalePrice}"/><DataGridTextColumn Header="Ср. комиссия (руб/шт)" Binding="{Binding AvgCommissionPerUnit}"/><DataGridTextColumn Header="Ср. логистика МП (руб/шт)" Binding="{Binding AvgMpLogisticsPerUnit}"/><DataGridTextColumn Header="Реклама (руб/шт)" Binding="{Binding AdsPerUnit}"/><DataGridTextColumn Header="Ср. себестоимость (руб/шт)" Binding="{Binding AvgCostUnit}"/><DataGridTextColumn Header="Упаковка (руб/шт)" Binding="{Binding PackagingPerUnit}"/><DataGridTextColumn Header="Полная себестоимость (руб/шт)" Binding="{Binding FullCostPerUnit}"/><DataGridTextColumn Header="Валовая прибыль (руб/шт)" Binding="{Binding GrossProfitPerUnit}"/><DataGridTextColumn Header="Чистая прибыль (руб/шт)" Binding="{Binding NetProfitPerUnit}"/><DataGridTextColumn Header="ROI (%)" Binding="{Binding RoiPct}"/><DataGridTextColumn Header="Доля самовыкупа (%)" Binding="{Binding SelfBuySharePct}"/></DataGrid.Columns></DataGrid></TabItem>
+            <TabItem Header="P&amp;L + KPI"><StackPanel Margin="12"><TextBlock FontSize="20" FontWeight="SemiBold" Text="P&amp;L + KPI" ToolTip="Прибыль и убытки + ключевые показатели"/><TextBlock Foreground="#64748B" Text="Карточки KPI и аналитические графики" Margin="0,6,0,12"/><UniformGrid Columns="4" Margin="0,0,0,12"><Border Margin="0,0,8,0" Padding="12" Background="#F8FAFC" BorderBrush="#E2E8F0" BorderThickness="1"><StackPanel><TextBlock Text="Выручка"/><TextBlock Text="—" FontSize="24"/></StackPanel></Border><Border Margin="0,0,8,0" Padding="12" Background="#F8FAFC" BorderBrush="#E2E8F0" BorderThickness="1"><StackPanel><TextBlock Text="Чистая прибыль"/><TextBlock Text="—" FontSize="24"/></StackPanel></Border><Border Margin="0,0,8,0" Padding="12" Background="#F8FAFC" BorderBrush="#E2E8F0" BorderThickness="1"><StackPanel><TextBlock Text="Маржа"/><TextBlock Text="—" FontSize="24"/></StackPanel></Border><Border Padding="12" Background="#F8FAFC" BorderBrush="#E2E8F0" BorderThickness="1"><StackPanel><TextBlock Text="ROI"/><TextBlock Text="—" FontSize="24"/></StackPanel></Border></UniformGrid></StackPanel></TabItem>
+            <TabItem Header="Аналитика/Диаграммы"><Grid Margin="12"><Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions><TextBlock Text="Пользовательские таблицы и диаграммы (линейная/столбчатая/круговая)" FontWeight="SemiBold"/><UniformGrid Grid.Row="1" Columns="3" Margin="0,12,0,0"><Border Margin="0,0,8,0" Background="#F8FAFC" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="10"><TextBlock Text="Линейная диаграмма" HorizontalAlignment="Center" VerticalAlignment="Center"/></Border><Border Margin="0,0,8,0" Background="#F8FAFC" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="10"><TextBlock Text="Столбчатая диаграмма" HorizontalAlignment="Center" VerticalAlignment="Center"/></Border><Border Background="#F8FAFC" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="10"><TextBlock Text="Круговая диаграмма" HorizontalAlignment="Center" VerticalAlignment="Center"/></Border></UniformGrid></Grid></TabItem>
         </TabControl>
 
-        <Border Grid.Row="3" Background="#111827" CornerRadius="10" Padding="8" Margin="0,10,0,0" Opacity="0.95">
-            <TextBlock Text="{Binding ToastMessage}" Foreground="White"/>
-        </Border>
+        <Border Grid.Row="3" Background="#111827" CornerRadius="10" Padding="8" Margin="0,10,0,0" Opacity="0.95"><TextBlock Text="{Binding ToastMessage}" Foreground="White"/></Border>
     </Grid>
 </Window>

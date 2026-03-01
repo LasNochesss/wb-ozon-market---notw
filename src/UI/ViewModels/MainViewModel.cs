@@ -1,4 +1,6 @@
+using System.Collections;
 using System.Collections.ObjectModel;
+using System.Windows;
 using Domain.Models;
 using Microsoft.Win32;
 using Services;
@@ -34,9 +36,32 @@ public class MainViewModel : ObservableObject
     public ObservableCollection<string> ValidationLog { get; } = [];
 
     private DateTime _from = DateTime.Today.AddMonths(-1);
-    public DateTime From { get => _from; set => Set(ref _from, value); }
+    public DateTime From
+    {
+        get => _from;
+        set
+        {
+            Set(ref _from, value);
+            ValidatePeriodAndMarkDirty();
+        }
+    }
+
     private DateTime _to = DateTime.Today;
-    public DateTime To { get => _to; set => Set(ref _to, value); }
+    public DateTime To
+    {
+        get => _to;
+        set
+        {
+            Set(ref _to, value);
+            ValidatePeriodAndMarkDirty();
+        }
+    }
+
+    private bool _isBusy;
+    public bool IsBusy { get => _isBusy; set { Set(ref _isBusy, value); RaiseCommandStates(); } }
+
+    private bool _hasUnsavedChanges;
+    public bool HasUnsavedChanges { get => _hasUnsavedChanges; set { Set(ref _hasUnsavedChanges, value); SaveState = value ? _localization.T(_settings.Language, "Status.Dirty") : _localization.T(_settings.Language, "Status.Saved"); } }
 
     private string _currentExcelPath = "(не выбран)";
     public string CurrentExcelPath { get => _currentExcelPath; set => Set(ref _currentExcelPath, value); }
@@ -63,29 +88,53 @@ public class MainViewModel : ObservableObject
         CurrentExcelPath = _settings.LastExcelPath ?? "(не выбран)";
         SaveState = _localization.T(_settings.Language, "Status.Saved");
 
-        CreateProjectCommand = new RelayCommand(CreateProject);
-        RecalculateCommand = new RelayCommand(async () => await RecalculateAsync());
-        NewFileCommand = new RelayCommand(NewFile);
-        OpenExcelCommand = new RelayCommand(async () => await OpenExcelAsync());
-        SaveExcelCommand = new RelayCommand(async () => await SaveExcelAsync());
-        SaveAsExcelCommand = new RelayCommand(async () => await SaveAsExcelAsync());
-        ExportExcelCommand = new RelayCommand(async () => await SaveAsExcelAsync());
-        ImportExcelCommand = new RelayCommand(async () => await OpenExcelAsync());
-        OpenSettingsCommand = new RelayCommand(OpenSettings);
+        CreateProjectCommand = new RelayCommand(CreateProject, () => !IsBusy);
+        RecalculateCommand = new RelayCommand(RecalculateAsync, () => !IsBusy && _reporting is not null);
+        NewFileCommand = new RelayCommand(NewFile, () => !IsBusy);
+        OpenExcelCommand = new RelayCommand(OpenExcelAsync, () => !IsBusy);
+        SaveExcelCommand = new RelayCommand(SaveExcelAsync, () => !IsBusy);
+        SaveAsExcelCommand = new RelayCommand(SaveAsExcelAsync, () => !IsBusy);
+        ExportExcelCommand = new RelayCommand(SaveAsExcelAsync, () => !IsBusy);
+        ImportExcelCommand = new RelayCommand(OpenExcelAsync, () => !IsBusy);
+        OpenSettingsCommand = new RelayCommand(OpenSettings, () => !IsBusy);
+    }
+
+    private void RaiseCommandStates()
+    {
+        CreateProjectCommand.RaiseCanExecuteChanged();
+        RecalculateCommand.RaiseCanExecuteChanged();
+        NewFileCommand.RaiseCanExecuteChanged();
+        OpenExcelCommand.RaiseCanExecuteChanged();
+        SaveExcelCommand.RaiseCanExecuteChanged();
+        SaveAsExcelCommand.RaiseCanExecuteChanged();
+        ExportExcelCommand.RaiseCanExecuteChanged();
+        ImportExcelCommand.RaiseCanExecuteChanged();
+        OpenSettingsCommand.RaiseCanExecuteChanged();
     }
 
     private void CreateProject()
     {
+        if (HasUnsavedChanges)
+        {
+            var confirm = MessageBox.Show("Есть несохранённые изменения. Создать новый проект и очистить текущие данные?", "Подтверждение", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+            if (confirm != MessageBoxResult.Yes) return;
+        }
+
         _db = _projectService.CreateContext("project.sqlite");
         _reporting = new ReportingService(_db);
+
+        foreach (var col in new IEnumerable[] { Products, FxRates, Purchases, Logistics, Sales, Marketing, OtherCosts, Inventory, UnitEconomics, ValidationLog })
+            if (col is IList list) list.Clear();
+
+        HasUnsavedChanges = true;
         ToastMessage = "Проект создан";
+        RaiseCommandStates();
     }
 
     private void NewFile()
     {
         CreateProject();
         CurrentExcelPath = "(новый файл)";
-        SaveState = _localization.T(_settings.Language, "Status.Dirty");
     }
 
     private async Task OpenExcelAsync()
@@ -93,34 +142,46 @@ public class MainViewModel : ObservableObject
         if (_db is null) CreateProject();
         var dlg = new OpenFileDialog { Filter = "Файл Excel (*.xlsx)|*.xlsx" };
         if (dlg.ShowDialog() != true || _db is null) return;
-        var result = await _excelStorage.ImportAsync(_db, dlg.FileName);
-        ValidationLog.Clear();
-        if (!result.Success)
-        {
-            foreach (var e in result.Errors) ValidationLog.Add($"{e.Sheet}: строка {e.Row}, колонка {e.Column} — {e.Message}");
-            ToastMessage = "Ошибка валидации импорта";
-            return;
-        }
 
-        CurrentExcelPath = dlg.FileName;
-        _settings.LastExcelPath = dlg.FileName;
-        _settingsService.Save(_settings);
-        SaveState = _localization.T(_settings.Language, "Status.Saved");
-        await RecalculateAsync();
-        ToastMessage = "Импорт завершён";
+        IsBusy = true;
+        try
+        {
+            var result = await _excelStorage.ImportAsync(_db, dlg.FileName);
+            ValidationLog.Clear();
+            if (!result.Success)
+            {
+                foreach (var e in result.Errors) ValidationLog.Add($"{e.Sheet}: строка {e.Row}, колонка {e.Column} — {e.Message}");
+                ToastMessage = "Ошибка валидации импорта";
+                return;
+            }
+
+            CurrentExcelPath = dlg.FileName;
+            _settings.LastExcelPath = dlg.FileName;
+            _settingsService.Save(_settings);
+            HasUnsavedChanges = false;
+            await RecalculateAsync();
+            ToastMessage = "Импорт завершён";
+        }
+        finally { IsBusy = false; }
     }
 
     private async Task SaveExcelAsync()
     {
-        if (string.IsNullOrWhiteSpace(CurrentExcelPath) || CurrentExcelPath == "(не выбран)" || CurrentExcelPath == "(новый файл)")
+        if (string.IsNullOrWhiteSpace(CurrentExcelPath) || CurrentExcelPath is "(не выбран)" or "(новый файл)")
         {
             await SaveAsExcelAsync();
             return;
         }
         if (_db is null) return;
-        await _excelStorage.ExportAsync(_db, CurrentExcelPath, Inventory, UnitEconomics);
-        SaveState = _localization.T(_settings.Language, "Status.Saved");
-        ToastMessage = "Файл сохранён";
+
+        IsBusy = true;
+        try
+        {
+            await _excelStorage.ExportAsync(_db, CurrentExcelPath, Inventory, UnitEconomics);
+            HasUnsavedChanges = false;
+            ToastMessage = "Файл сохранён";
+        }
+        finally { IsBusy = false; }
     }
 
     private async Task SaveAsExcelAsync()
@@ -128,30 +189,53 @@ public class MainViewModel : ObservableObject
         if (_db is null) CreateProject();
         var dlg = new SaveFileDialog { Filter = "Файл Excel (*.xlsx)|*.xlsx" };
         if (dlg.ShowDialog() != true || _db is null) return;
-        CurrentExcelPath = dlg.FileName;
-        _settings.LastExcelPath = dlg.FileName;
-        _settingsService.Save(_settings);
-        await _excelStorage.ExportAsync(_db, dlg.FileName, Inventory, UnitEconomics);
-        SaveState = _localization.T(_settings.Language, "Status.Saved");
-        ToastMessage = "Файл сохранён";
+
+        IsBusy = true;
+        try
+        {
+            CurrentExcelPath = dlg.FileName;
+            _settings.LastExcelPath = dlg.FileName;
+            _settingsService.Save(_settings);
+            await _excelStorage.ExportAsync(_db, dlg.FileName, Inventory, UnitEconomics);
+            HasUnsavedChanges = false;
+            ToastMessage = "Файл сохранён";
+        }
+        finally { IsBusy = false; }
     }
 
     private async Task RecalculateAsync()
     {
         if (_reporting is null) return;
+        if (From > To)
+        {
+            ToastMessage = "Период задан неверно: дата " + "с" + " больше даты " + "по";
+            return;
+        }
 
-        Inventory.Clear();
-        foreach (var row in await _reporting.BuildInventoryAsync()) Inventory.Add(row);
-        UnitEconomics.Clear();
-        foreach (var row in await _reporting.BuildUnitEconomicsAsync(DateOnly.FromDateTime(From), DateOnly.FromDateTime(To))) UnitEconomics.Add(row);
+        IsBusy = true;
+        ToastMessage = "Идёт пересчёт...";
+        try
+        {
+            Inventory.Clear();
+            foreach (var row in await _reporting.BuildInventoryAsync()) Inventory.Add(row);
+            UnitEconomics.Clear();
+            foreach (var row in await _reporting.BuildUnitEconomicsAsync(DateOnly.FromDateTime(From), DateOnly.FromDateTime(To))) UnitEconomics.Add(row);
 
-        _ = _charts.RevenueByMarketplace(Sales);
+            _ = _charts.RevenueByMarketplace(Sales);
+            HasUnsavedChanges = true;
 
-        SaveState = _localization.T(_settings.Language, "Status.Dirty");
-        if (_settings.AutoSaveEnabled && CurrentExcelPath.EndsWith(".xlsx", StringComparison.OrdinalIgnoreCase))
-            await SaveExcelAsync();
+            if (_settings.AutoSaveEnabled && CurrentExcelPath.EndsWith(".xlsx", StringComparison.OrdinalIgnoreCase))
+                await SaveExcelAsync();
 
-        ToastMessage = "Пересчёт завершён";
+            ToastMessage = "Пересчёт завершён";
+        }
+        finally { IsBusy = false; }
+    }
+
+    private void ValidatePeriodAndMarkDirty()
+    {
+        if (From > To) ToastMessage = "Период задан неверно: " + "с" + " больше " + "по";
+        else if (_reporting is not null) HasUnsavedChanges = true;
     }
 
     private void OpenSettings()
@@ -163,7 +247,6 @@ public class MainViewModel : ObservableObject
         _settings.AutoSaveEnabled = window.Result.AutoSaveEnabled;
         _settingsService.Save(_settings);
 
-        SaveState = _localization.T(_settings.Language, "Status.Saved");
         ToastMessage = "Настройки сохранены";
     }
 }
