@@ -10,6 +10,7 @@
                 <ResourceDictionary Source="Styles/Spacing.xaml"/>
                 <ResourceDictionary Source="Styles/Shadows.xaml"/>
                 <ResourceDictionary Source="Styles/Controls.xaml"/>
+                <ResourceDictionary Source="Styles/Themes/LightTheme.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

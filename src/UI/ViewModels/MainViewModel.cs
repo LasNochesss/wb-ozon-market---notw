@@ -9,6 +9,7 @@ using UI.Modules.Charts;
 using UI.Modules.Localization;
 using UI.Modules.Settings;
 using UI.Views;
+using UI.Theming;
 
 namespace UI.ViewModels;
 
@@ -246,6 +247,7 @@ public class MainViewModel : ObservableObject
         _settings.Theme = window.Result.Theme;
         _settings.AutoSaveEnabled = window.Result.AutoSaveEnabled;
         _settingsService.Save(_settings);
+        ThemeManager.Apply(_settings.Theme);
 
         ToastMessage = "Настройки сохранены";
     }

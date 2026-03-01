@@ -1,0 +1,13 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <SolidColorBrush x:Key="Theme.WindowBackgroundBrush" Color="#0F172A"/>
+    <SolidColorBrush x:Key="Theme.SurfaceBrush" Color="#111827"/>
+    <SolidColorBrush x:Key="Theme.BorderBrush" Color="#334155"/>
+    <SolidColorBrush x:Key="Theme.TextBrush" Color="#E5E7EB"/>
+    <SolidColorBrush x:Key="Theme.MutedTextBrush" Color="#94A3B8"/>
+    <SolidColorBrush x:Key="Theme.ToastBrush" Color="#020617"/>
+    <SolidColorBrush x:Key="Theme.RowAltBrush" Color="#1E293B"/>
+    <SolidColorBrush x:Key="Theme.RowHoverBrush" Color="#312E81"/>
+    <SolidColorBrush x:Key="Theme.RowSelectedBrush" Color="#3730A3"/>
+    <SolidColorBrush x:Key="Theme.InputBackgroundBrush" Color="#0B1220"/>
+</ResourceDictionary>

@@ -4,18 +4,45 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        Title="MAIN_SYSTEM" Height="900" Width="1650" Background="#F6F8FC"
+        Title="MAIN_SYSTEM" Height="900" Width="1650" Background="{DynamicResource Theme.WindowBackgroundBrush}"
         ToolTipService.InitialShowDelay="400"
         ToolTipService.BetweenShowDelay="200"
         ToolTipService.ShowDuration="8000">
 
     <Window.Resources>
+                <Style TargetType="ToolTip">
+            <Setter Property="Background" Value="{DynamicResource Theme.SurfaceBrush}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource Theme.BorderBrush}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="10,8"/>
+            <Setter Property="MaxWidth" Value="320"/>
+            <Setter Property="TextBlock.TextWrapping" Value="Wrap"/>
+            <Setter Property="FontSize" Value="12"/>
+        </Style>
+        <Style TargetType="DataGrid">
+            <Setter Property="Background" Value="{DynamicResource Theme.SurfaceBrush}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource Theme.BorderBrush}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CanUserAddRows" Value="True"/>
+            <Setter Property="CanUserDeleteRows" Value="True"/>
+            <Setter Property="CanUserReorderColumns" Value="True"/>
+            <Setter Property="CanUserSortColumns" Value="True"/>
+            <Setter Property="SelectionUnit" Value="FullRow"/>
+            <Setter Property="GridLinesVisibility" Value="Horizontal"/>
+            <Setter Property="HorizontalGridLinesBrush" Value="{DynamicResource Theme.BorderBrush}"/>
+        </Style>
+        <Style TargetType="DataGridColumnHeader">
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Background" Value="{DynamicResource Theme.RowAltBrush}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource Theme.BorderBrush}"/>
+            <Setter Property="BorderThickness" Value="0,0,0,1"/>
+        </Style>
         <Style TargetType="DataGridRow">
-            <Setter Property="Background" Value="White"/>
+            <Setter Property="Background" Value="{DynamicResource Theme.SurfaceBrush}"/>
             <Style.Triggers>
-                <Trigger Property="AlternationIndex" Value="1"><Setter Property="Background" Value="#F8FAFC"/></Trigger>
-                <Trigger Property="IsMouseOver" Value="True"><Setter Property="Background" Value="#EEF2FF"/></Trigger>
-                <Trigger Property="IsSelected" Value="True"><Setter Property="Background" Value="#E0E7FF"/></Trigger>
+                <Trigger Property="AlternationIndex" Value="1"><Setter Property="Background" Value="{DynamicResource Theme.RowAltBrush}"/></Trigger>
+                <Trigger Property="IsMouseOver" Value="True"><Setter Property="Background" Value="{DynamicResource Theme.RowHoverBrush}"/></Trigger>
+                <Trigger Property="IsSelected" Value="True"><Setter Property="Background" Value="{DynamicResource Theme.RowSelectedBrush}"/></Trigger>
             </Style.Triggers>
         </Style>
         <Style TargetType="DataGridCell"><Setter Property="Padding" Value="8,5"/></Style>
@@ -32,21 +59,29 @@
         <DockPanel Grid.Row="0" Margin="0,0,0,10">
             <Button DockPanel.Dock="Left" Content="⚙️" Width="36" Height="36" FontSize="16" Command="{Binding OpenSettingsCommand}" ToolTip="Open application settings"/>
             <StackPanel Orientation="Horizontal" Margin="10,0,0,0">
-                <Button Content="Создать проект" Command="{Binding CreateProjectCommand}" Margin="0,0,8,0" ToolTip="Create a new project and clear current data"/>
-                <Button Content="Пересчитать" Command="{Binding RecalculateCommand}" Margin="0,0,8,0" ToolTip="Recalculate unit economics and P&amp;L/KPI based on current data"/>
-                <TextBlock VerticalAlignment="Center" Margin="8,0,4,0" Text="Период: с" ToolTip="Filter by date range"/>
-                <DatePicker SelectedDate="{Binding From}" Margin="0,0,8,0" ToolTip="Filter by date range"/>
-                <TextBlock VerticalAlignment="Center" Margin="8,0,4,0" Text="по" ToolTip="Filter by date range"/>
-                <DatePicker SelectedDate="{Binding To}" ToolTip="Filter by date range"/>
+                <Button Content="Создать проект" Command="{Binding CreateProjectCommand}" Margin="0,0,8,0" ToolTip="Create a new project and clear current data
+Создать новый проект и очистить текущие данные"/>
+                <Button Content="Пересчитать" Command="{Binding RecalculateCommand}" Margin="0,0,8,0" ToolTip="Recalculate unit economics and P&amp;L/KPI based on current data
+Пересчитать показатели по текущим данным"/>
+                <TextBlock VerticalAlignment="Center" Margin="8,0,4,0" Text="Период: с" ToolTip="Filter by date range
+Фильтр по диапазону дат"/>
+                <DatePicker SelectedDate="{Binding From}" Margin="0,0,8,0" ToolTip="Filter by date range
+Фильтр по диапазону дат"/>
+                <TextBlock VerticalAlignment="Center" Margin="8,0,4,0" Text="по" ToolTip="Filter by date range
+Фильтр по диапазону дат"/>
+                <DatePicker SelectedDate="{Binding To}" ToolTip="Filter by date range
+Фильтр по диапазону дат"/>
             </StackPanel>
         </DockPanel>
 
-        <Border Grid.Row="1" Background="White" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="10" Padding="10" Margin="0,0,0,10">
+        <Border Grid.Row="1" Background="{DynamicResource Theme.SurfaceBrush}" BorderBrush="{DynamicResource Theme.BorderBrush}" BorderThickness="1" CornerRadius="10" Padding="10" Margin="0,0,0,10">
             <StackPanel Orientation="Horizontal">
-                <TextBlock Text="Путь: " Foreground="#64748B"/>
-                <TextBlock Text="{Binding CurrentExcelPath}" FontWeight="SemiBold" ToolTip="Current project file location"/>
-                <TextBlock Text="   |   Статус: " Foreground="#64748B" Margin="14,0,0,0"/>
-                <TextBlock Text="{Binding SaveState}" ToolTip="Unsaved changes / Saved"/>
+                <TextBlock Text="Путь: " Foreground="{DynamicResource Theme.MutedTextBrush}"/>
+                <TextBlock Text="{Binding CurrentExcelPath}" FontWeight="SemiBold" ToolTip="Current project file location
+Текущий путь к файлу проекта"/>
+                <TextBlock Text="   |   Статус: " Foreground="{DynamicResource Theme.MutedTextBrush}" Margin="14,0,0,0"/>
+                <TextBlock Text="{Binding SaveState}" ToolTip="Unsaved changes / Saved
+Есть изменения / Сохранено"/>
             </StackPanel>
         </Border>
 
@@ -75,10 +110,11 @@
             <TabItem Header="Прочие расходы"><DataGrid ItemsSource="{Binding OtherCosts}" AutoGenerateColumns="False" AlternationCount="2"><DataGrid.Columns><DataGridTextColumn Header="ID расхода" Binding="{Binding CostId}"/><DataGridTextColumn Header="Дата" Binding="{Binding Date, StringFormat=dd.MM.yyyy}"/><DataGridTextColumn Header="Тип расхода" Binding="{Binding CostType}"/><DataGridTextColumn Header="Сумма (руб)" Binding="{Binding AmountRub}"/><DataGridTextColumn Header="Комментарий" Binding="{Binding Comment}"/></DataGrid.Columns></DataGrid></TabItem>
             <TabItem Header="Склад"><DataGrid ItemsSource="{Binding Inventory}" AutoGenerateColumns="False" IsReadOnly="True" AlternationCount="2"><DataGrid.Columns><DataGridTextColumn Header="SKU" Binding="{Binding Sku}"/><DataGridTextColumn Header="Поступило (шт)" Binding="{Binding TotalInQty}"/><DataGridTextColumn Header="Выбыло (шт)" Binding="{Binding TotalOutQty}"/><DataGridTextColumn Header="Возвраты (шт)" Binding="{Binding TotalReturnQty}"/><DataGridTextColumn Header="Остаток (шт)" Binding="{Binding StockQty}"/><DataGridTextColumn Header="Ср. себестоимость (руб/шт)" Binding="{Binding AvgCostRubPerUnit}"/><DataGridTextColumn Header="Стоимость остатков (руб)" Binding="{Binding StockValueRub}"/></DataGrid.Columns></DataGrid></TabItem>
             <TabItem Header="Юнит-экономика"><DataGrid ItemsSource="{Binding UnitEconomics}" AutoGenerateColumns="False" IsReadOnly="True" AlternationCount="2"><DataGrid.Columns><DataGridTextColumn Header="SKU" Binding="{Binding Sku}"/><DataGridTextColumn Header="Ср. цена продажи (руб)" Binding="{Binding AvgSalePrice}"/><DataGridTextColumn Header="Ср. комиссия (руб/шт)" Binding="{Binding AvgCommissionPerUnit}"/><DataGridTextColumn Header="Ср. логистика МП (руб/шт)" Binding="{Binding AvgMpLogisticsPerUnit}"/><DataGridTextColumn Header="Реклама (руб/шт)" Binding="{Binding AdsPerUnit}"/><DataGridTextColumn Header="Ср. себестоимость (руб/шт)" Binding="{Binding AvgCostUnit}"/><DataGridTextColumn Header="Упаковка (руб/шт)" Binding="{Binding PackagingPerUnit}"/><DataGridTextColumn Header="Полная себестоимость (руб/шт)" Binding="{Binding FullCostPerUnit}"/><DataGridTextColumn Header="Валовая прибыль (руб/шт)" Binding="{Binding GrossProfitPerUnit}"/><DataGridTextColumn Header="Чистая прибыль (руб/шт)" Binding="{Binding NetProfitPerUnit}"/><DataGridTextColumn Header="ROI (%)" Binding="{Binding RoiPct}"/><DataGridTextColumn Header="Доля самовыкупа (%)" Binding="{Binding SelfBuySharePct}"/></DataGrid.Columns></DataGrid></TabItem>
-            <TabItem Header="P&amp;L + KPI"><StackPanel Margin="12"><TextBlock FontSize="20" FontWeight="SemiBold" Text="P&amp;L + KPI" ToolTip="Прибыль и убытки + ключевые показатели"/><TextBlock Foreground="#64748B" Text="Карточки KPI и аналитические графики" Margin="0,6,0,12"/><UniformGrid Columns="4" Margin="0,0,0,12"><Border Margin="0,0,8,0" Padding="12" Background="#F8FAFC" BorderBrush="#E2E8F0" BorderThickness="1"><StackPanel><TextBlock Text="Выручка"/><TextBlock Text="—" FontSize="24"/></StackPanel></Border><Border Margin="0,0,8,0" Padding="12" Background="#F8FAFC" BorderBrush="#E2E8F0" BorderThickness="1"><StackPanel><TextBlock Text="Чистая прибыль"/><TextBlock Text="—" FontSize="24"/></StackPanel></Border><Border Margin="0,0,8,0" Padding="12" Background="#F8FAFC" BorderBrush="#E2E8F0" BorderThickness="1"><StackPanel><TextBlock Text="Маржа"/><TextBlock Text="—" FontSize="24"/></StackPanel></Border><Border Padding="12" Background="#F8FAFC" BorderBrush="#E2E8F0" BorderThickness="1"><StackPanel><TextBlock Text="ROI"/><TextBlock Text="—" FontSize="24"/></StackPanel></Border></UniformGrid></StackPanel></TabItem>
-            <TabItem Header="Аналитика/Диаграммы"><Grid Margin="12"><Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions><TextBlock Text="Пользовательские таблицы и диаграммы (линейная/столбчатая/круговая)" FontWeight="SemiBold"/><UniformGrid Grid.Row="1" Columns="3" Margin="0,12,0,0"><Border Margin="0,0,8,0" Background="#F8FAFC" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="10"><TextBlock Text="Линейная диаграмма" HorizontalAlignment="Center" VerticalAlignment="Center"/></Border><Border Margin="0,0,8,0" Background="#F8FAFC" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="10"><TextBlock Text="Столбчатая диаграмма" HorizontalAlignment="Center" VerticalAlignment="Center"/></Border><Border Background="#F8FAFC" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="10"><TextBlock Text="Круговая диаграмма" HorizontalAlignment="Center" VerticalAlignment="Center"/></Border></UniformGrid></Grid></TabItem>
+            <TabItem Header="P&amp;L + KPI"><StackPanel Margin="12"><TextBlock FontSize="20" FontWeight="SemiBold" Text="P&amp;L + KPI" ToolTip="P&L + KPI
+Прибыль и убытки + ключевые показатели"/><TextBlock Foreground="{DynamicResource Theme.MutedTextBrush}" Text="Карточки KPI и аналитические графики" Margin="0,6,0,12"/><UniformGrid Columns="4" Margin="0,0,0,12"><Border Margin="0,0,8,0" Padding="12" Background="{DynamicResource Theme.RowAltBrush}" BorderBrush="{DynamicResource Theme.BorderBrush}" BorderThickness="1"><StackPanel><TextBlock Text="Выручка"/><TextBlock Text="—" FontSize="24"/></StackPanel></Border><Border Margin="0,0,8,0" Padding="12" Background="{DynamicResource Theme.RowAltBrush}" BorderBrush="{DynamicResource Theme.BorderBrush}" BorderThickness="1"><StackPanel><TextBlock Text="Чистая прибыль"/><TextBlock Text="—" FontSize="24"/></StackPanel></Border><Border Margin="0,0,8,0" Padding="12" Background="{DynamicResource Theme.RowAltBrush}" BorderBrush="{DynamicResource Theme.BorderBrush}" BorderThickness="1"><StackPanel><TextBlock Text="Маржа"/><TextBlock Text="—" FontSize="24"/></StackPanel></Border><Border Padding="12" Background="{DynamicResource Theme.RowAltBrush}" BorderBrush="{DynamicResource Theme.BorderBrush}" BorderThickness="1"><StackPanel><TextBlock Text="ROI"/><TextBlock Text="—" FontSize="24"/></StackPanel></Border></UniformGrid></StackPanel></TabItem>
+            <TabItem Header="Аналитика/Диаграммы"><Grid Margin="12"><Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions><TextBlock Text="Пользовательские таблицы и диаграммы (линейная/столбчатая/круговая)" FontWeight="SemiBold"/><UniformGrid Grid.Row="1" Columns="3" Margin="0,12,0,0"><Border Margin="0,0,8,0" Background="{DynamicResource Theme.RowAltBrush}" BorderBrush="{DynamicResource Theme.BorderBrush}" BorderThickness="1" CornerRadius="10"><TextBlock Text="Линейная диаграмма" HorizontalAlignment="Center" VerticalAlignment="Center"/></Border><Border Margin="0,0,8,0" Background="{DynamicResource Theme.RowAltBrush}" BorderBrush="{DynamicResource Theme.BorderBrush}" BorderThickness="1" CornerRadius="10"><TextBlock Text="Столбчатая диаграмма" HorizontalAlignment="Center" VerticalAlignment="Center"/></Border><Border Background="{DynamicResource Theme.RowAltBrush}" BorderBrush="{DynamicResource Theme.BorderBrush}" BorderThickness="1" CornerRadius="10"><TextBlock Text="Круговая диаграмма" HorizontalAlignment="Center" VerticalAlignment="Center"/></Border></UniformGrid></Grid></TabItem>
         </TabControl>
 
-        <Border Grid.Row="3" Background="#111827" CornerRadius="10" Padding="8" Margin="0,10,0,0" Opacity="0.95"><TextBlock Text="{Binding ToastMessage}" Foreground="White"/></Border>
+        <Border Grid.Row="3" Background="{DynamicResource Theme.ToastBrush}" CornerRadius="10" Padding="8" Margin="0,10,0,0" Opacity="0.95"><TextBlock Text="{Binding ToastMessage}" Foreground="White"/></Border>
     </Grid>
 </Window>

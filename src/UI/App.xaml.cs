@@ -1,6 +1,8 @@
 using System.Globalization;
 using System.Threading;
 using System.Windows;
+using UI.Modules.Settings;
+using UI.Theming;
 
 namespace UI;
 
@@ -13,6 +15,10 @@ public partial class App : Application
         Thread.CurrentThread.CurrentUICulture = ruCulture;
         CultureInfo.DefaultThreadCurrentCulture = ruCulture;
         CultureInfo.DefaultThreadCurrentUICulture = ruCulture;
+
+        var settings = new SettingsService().Load();
+        ThemeManager.Apply(settings.Theme);
+
         base.OnStartup(e);
     }
 }
