@@ -4,29 +4,212 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        Title="MAIN_SYSTEM" Height="900" Width="1400">
-    <DockPanel>
-        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="8">
-            <Button Content="Создать проект" Command="{Binding CreateProjectCommand}" Margin="0,0,8,0"/>
-            <Button Content="Пересчитать" Command="{Binding RecalculateCommand}" Margin="0,0,8,0"/>
-            <TextBlock VerticalAlignment="Center" Margin="8,0,4,0" Text="Период с:"/>
-            <DatePicker SelectedDate="{Binding From}" Margin="0,0,8,0"/>
-            <TextBlock VerticalAlignment="Center" Margin="8,0,4,0" Text="по:"/>
-            <DatePicker SelectedDate="{Binding To}"/>
-        </StackPanel>
+        Title="MAIN_SYSTEM" Height="900" Width="1600"
+        Background="#F6F8FC"
+        WindowStartupLocation="CenterScreen">
+    <Window.Resources>
+        <SolidColorBrush x:Key="BgBrush" Color="#F6F8FC"/>
+        <SolidColorBrush x:Key="CardBrush" Color="#FFFFFF"/>
+        <SolidColorBrush x:Key="PrimaryBrush" Color="#4F46E5"/>
+        <SolidColorBrush x:Key="SecondaryBrush" Color="#06B6D4"/>
+        <SolidColorBrush x:Key="SuccessBrush" Color="#22C55E"/>
+        <SolidColorBrush x:Key="WarningBrush" Color="#F59E0B"/>
+        <SolidColorBrush x:Key="ErrorBrush" Color="#EF4444"/>
+        <SolidColorBrush x:Key="TextBrush" Color="#0F172A"/>
+        <SolidColorBrush x:Key="MutedTextBrush" Color="#64748B"/>
+        <SolidColorBrush x:Key="BorderBrushSoft" Color="#E2E8F0"/>
+
+        <Style x:Key="PrimaryButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="{StaticResource PrimaryBrush}"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Padding" Value="16,10"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border CornerRadius="12" Background="{TemplateBinding Background}" SnapsToDevicePixels="True">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Opacity" Value="0.92"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="SecondaryButtonStyle" TargetType="Button" BasedOn="{StaticResource PrimaryButtonStyle}">
+            <Setter Property="Background" Value="#EEF2FF"/>
+            <Setter Property="Foreground" Value="{StaticResource PrimaryBrush}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderBrush" Value="#C7D2FE"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border CornerRadius="12" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style TargetType="DatePicker">
+            <Setter Property="Padding" Value="8,6"/>
+            <Setter Property="BorderBrush" Value="{StaticResource BorderBrushSoft}"/>
+            <Setter Property="Foreground" Value="{StaticResource TextBrush}"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="Margin" Value="0,0,8,0"/>
+        </Style>
+
+        <Style TargetType="Expander">
+            <Setter Property="Margin" Value="0,0,0,14"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Foreground" Value="{StaticResource TextBrush}"/>
+            <Setter Property="Background" Value="White"/>
+        </Style>
+
+        <Style TargetType="DataGrid">
+            <Setter Property="AutoGenerateColumns" Value="True"/>
+            <Setter Property="HeadersVisibility" Value="Column"/>
+            <Setter Property="GridLinesVisibility" Value="None"/>
+            <Setter Property="RowHeaderWidth" Value="0"/>
+            <Setter Property="BorderBrush" Value="{StaticResource BorderBrushSoft}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="CanUserResizeRows" Value="False"/>
+            <Setter Property="CanUserAddRows" Value="True"/>
+            <Setter Property="CanUserDeleteRows" Value="True"/>
+            <Setter Property="AlternationCount" Value="2"/>
+            <Setter Property="HorizontalGridLinesBrush" Value="#F1F5F9"/>
+            <Setter Property="VerticalGridLinesBrush" Value="#F1F5F9"/>
+            <Setter Property="ScrollViewer.CanContentScroll" Value="True"/>
+            <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
+            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto"/>
+        </Style>
+
+        <Style TargetType="DataGridColumnHeader">
+            <Setter Property="Background" Value="#F8FAFC"/>
+            <Setter Property="Foreground" Value="{StaticResource TextBrush}"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="BorderBrush" Value="{StaticResource BorderBrushSoft}"/>
+            <Setter Property="BorderThickness" Value="0,0,0,1"/>
+            <Setter Property="Padding" Value="10,8"/>
+        </Style>
+
+        <Style TargetType="DataGridRow">
+            <Setter Property="Foreground" Value="{StaticResource TextBrush}"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Style.Triggers>
+                <Trigger Property="AlternationIndex" Value="1">
+                    <Setter Property="Background" Value="#FBFDFF"/>
+                </Trigger>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#EEF2FF"/>
+                </Trigger>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Background" Value="#E0E7FF"/>
+                    <Setter Property="Foreground" Value="#1E1B4B"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style TargetType="DataGridCell">
+            <Setter Property="Padding" Value="10,6"/>
+            <Setter Property="BorderThickness" Value="0,0,0,1"/>
+            <Setter Property="BorderBrush" Value="#F1F5F9"/>
+        </Style>
+
+        <Style x:Key="SectionCardStyle" TargetType="Border">
+            <Setter Property="Background" Value="{StaticResource CardBrush}"/>
+            <Setter Property="CornerRadius" Value="12"/>
+            <Setter Property="BorderBrush" Value="{StaticResource BorderBrushSoft}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="0"/>
+        </Style>
+    </Window.Resources>
+
+    <DockPanel Margin="20">
+        <Border DockPanel.Dock="Top" Style="{StaticResource SectionCardStyle}" Padding="16" Margin="0,0,0,16">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <Button Grid.Column="0" Content="Создать проект" Command="{Binding CreateProjectCommand}" Style="{StaticResource PrimaryButtonStyle}" Margin="0,0,8,0"/>
+                <Button Grid.Column="1" Content="Пересчитать" Command="{Binding RecalculateCommand}" Style="{StaticResource SecondaryButtonStyle}" Margin="0,0,16,0"/>
+                <TextBlock Grid.Column="2" VerticalAlignment="Center" Foreground="{StaticResource MutedTextBrush}" FontSize="13" Text="Офлайн-учет: закупки, продажи, склад, юнит-экономика"/>
+                <TextBlock Grid.Column="3" VerticalAlignment="Center" Margin="8,0,4,0" Foreground="{StaticResource TextBrush}" Text="Период с:"/>
+                <DatePicker Grid.Column="4" SelectedDate="{Binding From}"/>
+                <StackPanel Grid.Column="5" Orientation="Horizontal">
+                    <TextBlock VerticalAlignment="Center" Margin="0,0,4,0" Foreground="{StaticResource TextBrush}" Text="по:"/>
+                    <DatePicker SelectedDate="{Binding To}" Margin="0"/>
+                </StackPanel>
+            </Grid>
+        </Border>
 
         <ScrollViewer VerticalScrollBarVisibility="Auto">
-            <StackPanel Margin="8">
-                <Expander Header="Товары" IsExpanded="True"><DataGrid ItemsSource="{Binding Products}" AutoGenerateColumns="True"/></Expander>
-                <Expander Header="Курсы валют"><DataGrid ItemsSource="{Binding FxRates}" AutoGenerateColumns="True"/></Expander>
-                <Expander Header="Закупки"><DataGrid ItemsSource="{Binding Purchases}" AutoGenerateColumns="True"/></Expander>
-                <Expander Header="Логистика"><DataGrid ItemsSource="{Binding Logistics}" AutoGenerateColumns="True"/></Expander>
-                <Expander Header="Продажи"><DataGrid ItemsSource="{Binding Sales}" AutoGenerateColumns="True"/></Expander>
-                <Expander Header="Маркетинг"><DataGrid ItemsSource="{Binding Marketing}" AutoGenerateColumns="True"/></Expander>
-                <Expander Header="Прочие расходы"><DataGrid ItemsSource="{Binding OtherCosts}" AutoGenerateColumns="True"/></Expander>
-                <Expander Header="Склад"><DataGrid ItemsSource="{Binding Inventory}" AutoGenerateColumns="True" IsReadOnly="True"/></Expander>
-                <Expander Header="Юнит-экономика"><DataGrid ItemsSource="{Binding UnitEconomics}" AutoGenerateColumns="True" IsReadOnly="True"/></Expander>
-                <Border Background="#222" Padding="8" Margin="0,10,0,0"><TextBlock Foreground="White" FontSize="18" Text="Раздел P&amp;L + KPI (графики/карточки будут подключены далее)"/></Border>
+            <StackPanel>
+                <Border Style="{StaticResource SectionCardStyle}">
+                    <Expander Header="📦 Товары" IsExpanded="True">
+                        <DataGrid ItemsSource="{Binding Products}" AutoGenerateColumns="False" MaxHeight="260">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Sku" Binding="{Binding Sku}"/>
+                                <DataGridTextColumn Header="Name" Binding="{Binding Name}"/>
+                                <DataGridTextColumn Header="Category" Binding="{Binding Category}"/>
+                                <DataGridTextColumn Header="PurchaseTargetCny" Binding="{Binding PurchaseTargetCny, StringFormat=N2}"/>
+                                <DataGridTextColumn Header="WeightKg" Binding="{Binding WeightKg, StringFormat=N2}"/>
+                                <DataGridTextColumn Header="DimensionsText" Binding="{Binding DimensionsText}"/>
+                                <DataGridTextColumn Header="PackagingRubPerUnit" Binding="{Binding PackagingRubPerUnit, StringFormat=N2}"/>
+                                <DataGridTextColumn Header="MinMarginPct" Binding="{Binding MinMarginPct, StringFormat=N2}"/>
+                                <DataGridTextColumn Header="TargetPriceRub" Binding="{Binding TargetPriceRub, StringFormat=N2}"/>
+                                <DataGridTemplateColumn Header="Status">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Border Padding="10,4" CornerRadius="12" HorizontalAlignment="Left" Background="#DCFCE7">
+                                                <TextBlock Text="{Binding Status}" Foreground="#166534" FontWeight="SemiBold" FontSize="12"/>
+                                            </Border>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </Expander>
+                </Border>
+
+                <Border Style="{StaticResource SectionCardStyle}"><Expander Header="💱 Курсы валют"><DataGrid ItemsSource="{Binding FxRates}" MaxHeight="220"/></Expander></Border>
+                <Border Style="{StaticResource SectionCardStyle}"><Expander Header="🧾 Закупки"><DataGrid ItemsSource="{Binding Purchases}" MaxHeight="260"/></Expander></Border>
+                <Border Style="{StaticResource SectionCardStyle}"><Expander Header="🚚 Логистика"><DataGrid ItemsSource="{Binding Logistics}" MaxHeight="260"/></Expander></Border>
+                <Border Style="{StaticResource SectionCardStyle}"><Expander Header="🛍 Продажи"><DataGrid ItemsSource="{Binding Sales}" MaxHeight="280"/></Expander></Border>
+                <Border Style="{StaticResource SectionCardStyle}"><Expander Header="📣 Маркетинг"><DataGrid ItemsSource="{Binding Marketing}" MaxHeight="240"/></Expander></Border>
+                <Border Style="{StaticResource SectionCardStyle}"><Expander Header="💸 Прочие расходы"><DataGrid ItemsSource="{Binding OtherCosts}" MaxHeight="240"/></Expander></Border>
+                <Border Style="{StaticResource SectionCardStyle}"><Expander Header="🏬 Склад"><DataGrid ItemsSource="{Binding Inventory}" IsReadOnly="True" MaxHeight="260"/></Expander></Border>
+                <Border Style="{StaticResource SectionCardStyle}"><Expander Header="📈 Юнит-экономика"><DataGrid ItemsSource="{Binding UnitEconomics}" IsReadOnly="True" MaxHeight="260"/></Expander></Border>
+
+                <Border Style="{StaticResource SectionCardStyle}" Padding="16" Margin="0,0,0,14">
+                    <StackPanel>
+                        <TextBlock FontSize="18" FontWeight="SemiBold" Foreground="{StaticResource TextBrush}" Margin="0,0,0,10" Text="Раздел P&amp;L + KPI (графики/карточки будут подключены далее)"/>
+                        <UniformGrid Columns="4" Margin="0,0,0,10">
+                            <Border Background="#F8FAFC" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="10" Margin="0,0,10,0" Padding="12"><StackPanel><TextBlock Text="Выручка" Foreground="#64748B"/><TextBlock Text="—" FontSize="22" FontWeight="Bold" Foreground="#0F172A"/></StackPanel></Border>
+                            <Border Background="#F8FAFC" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="10" Margin="0,0,10,0" Padding="12"><StackPanel><TextBlock Text="Чистая прибыль" Foreground="#64748B"/><TextBlock Text="—" FontSize="22" FontWeight="Bold" Foreground="#22C55E"/></StackPanel></Border>
+                            <Border Background="#F8FAFC" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="10" Margin="0,0,10,0" Padding="12"><StackPanel><TextBlock Text="Маржа" Foreground="#64748B"/><TextBlock Text="—" FontSize="22" FontWeight="Bold" Foreground="#4F46E5"/></StackPanel></Border>
+                            <Border Background="#F8FAFC" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="10" Padding="12"><StackPanel><TextBlock Text="ROI" Foreground="#64748B"/><TextBlock Text="—" FontSize="22" FontWeight="Bold" Foreground="#06B6D4"/></StackPanel></Border>
+                        </UniformGrid>
+                        <Border Background="#F8FAFC" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12" Padding="20">
+                            <TextBlock Text="Плейсхолдер под графики P&amp;L/KPI" Foreground="#64748B" HorizontalAlignment="Center"/>
+                        </Border>
+                    </StackPanel>
+                </Border>
             </StackPanel>
         </ScrollViewer>
     </DockPanel>
