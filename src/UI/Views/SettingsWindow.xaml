@@ -15,7 +15,7 @@
         <TextBlock Text="Язык интерфейса"/>
         <ComboBox x:Name="LanguageBox" Grid.Row="1" Margin="0,6,0,12">
             <ComboBoxItem Content="Русский" Tag="ru-RU"/>
-            <ComboBoxItem Content="English" Tag="en-US"/>
+            <ComboBoxItem Content="Английский" Tag="en-US"/>
         </ComboBox>
 
         <TextBlock Grid.Row="2" Text="Тема"/>

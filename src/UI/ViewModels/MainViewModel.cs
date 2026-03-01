@@ -91,7 +91,7 @@ public class MainViewModel : ObservableObject
     private async Task OpenExcelAsync()
     {
         if (_db is null) CreateProject();
-        var dlg = new OpenFileDialog { Filter = "Excel (*.xlsx)|*.xlsx" };
+        var dlg = new OpenFileDialog { Filter = "Файл Excel (*.xlsx)|*.xlsx" };
         if (dlg.ShowDialog() != true || _db is null) return;
         var result = await _excelStorage.ImportAsync(_db, dlg.FileName);
         ValidationLog.Clear();
@@ -126,7 +126,7 @@ public class MainViewModel : ObservableObject
     private async Task SaveAsExcelAsync()
     {
         if (_db is null) CreateProject();
-        var dlg = new SaveFileDialog { Filter = "Excel (*.xlsx)|*.xlsx" };
+        var dlg = new SaveFileDialog { Filter = "Файл Excel (*.xlsx)|*.xlsx" };
         if (dlg.ShowDialog() != true || _db is null) return;
         CurrentExcelPath = dlg.FileName;
         _settings.LastExcelPath = dlg.FileName;
