@@ -51,3 +51,7 @@ dotnet publish src/UI/UI.csproj -c Release -r win-x64 /p:PublishSingleFile=true 
 - Полная реализация импорта `xlsx` в транзакции all-or-nothing.
 - KPI карточки и графики LiveCharts2 в нижнем dashboard блоке.
 - Подсветка DataGrid по правилам (маржа/остатки) через DataTrigger styles.
+
+## Design System
+- Документ дизайн-системы и UX-спеки: `docs/DesignSystem-PremiumNotebook.md`
+- UI tokens вынесены в `src/UI/Styles/*` и подключены через `App.xaml` merged dictionaries.
