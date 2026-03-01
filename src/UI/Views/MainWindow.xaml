@@ -24,7 +24,7 @@
                 <Expander Header="Other Costs"><DataGrid ItemsSource="{Binding OtherCosts}" AutoGenerateColumns="True"/></Expander>
                 <Expander Header="Inventory"><DataGrid ItemsSource="{Binding Inventory}" AutoGenerateColumns="True" IsReadOnly="True"/></Expander>
                 <Expander Header="Unit Economics"><DataGrid ItemsSource="{Binding UnitEconomics}" AutoGenerateColumns="True" IsReadOnly="True"/></Expander>
-                <Border Background="#222" Padding="8" Margin="0,10,0,0"><TextBlock Foreground="White" FontSize="18" Text="P&L + KPI section (bound via charts/cards in next iteration)"/></Border>
+                <Border Background="#222" Padding="8" Margin="0,10,0,0"><TextBlock Foreground="White" FontSize="18" Text="P&amp;L + KPI section (bound via charts/cards in next iteration)"/></Border>
             </StackPanel>
         </ScrollViewer>
     </DockPanel>
