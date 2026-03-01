@@ -37,7 +37,7 @@ public partial class MainWindow : Window
         if (DataContext is not MainViewModel vm) return;
 
         var grid = GetActiveDataGrid();
-        if (grid is null || grid.IsReadOnly || grid.ItemsSource is not IList list)
+        if (grid is null || grid.ItemsSource is not IList list)
         {
             vm.ToastMessage = "На этой вкладке добавление строк недоступно";
             return;
@@ -105,7 +105,7 @@ public partial class MainWindow : Window
         if (DataContext is not MainViewModel vm) return;
 
         var grid = targetGrid ?? GetActiveDataGrid();
-        if (grid is null || grid.IsReadOnly || grid.ItemsSource is not IList list)
+        if (grid is null || grid.ItemsSource is not IList list)
         {
             vm.ToastMessage = "На этой вкладке удаление строк недоступно";
             return;
@@ -164,6 +164,8 @@ public partial class MainWindow : Window
             "SalesGrid" => new Sale { SaleDate = DateOnly.FromDateTime(DateTime.Today) },
             "MarketingGrid" => new MarketingCost { Date = DateOnly.FromDateTime(DateTime.Today) },
             "OtherCostsGrid" => new OtherCost { Date = DateOnly.FromDateTime(DateTime.Today) },
+            "InventoryGrid" => new InventoryRow(string.Empty, 0, 0, 0, 0, 0m, 0m),
+            "UnitEconomicsGrid" => new UnitEconomicsRow(string.Empty, 0m, 0m, 0m, 0m, 0m, 0m, 0m, 0m, 0m, 0m, 0m),
             _ => null
         };
     }
