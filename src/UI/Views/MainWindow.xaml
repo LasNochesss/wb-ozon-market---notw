@@ -9,22 +9,24 @@
         <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="8">
             <Button Content="Создать проект" Command="{Binding CreateProjectCommand}" Margin="0,0,8,0"/>
             <Button Content="Пересчитать" Command="{Binding RecalculateCommand}" Margin="0,0,8,0"/>
+            <TextBlock VerticalAlignment="Center" Margin="8,0,4,0" Text="Период с:"/>
             <DatePicker SelectedDate="{Binding From}" Margin="0,0,8,0"/>
+            <TextBlock VerticalAlignment="Center" Margin="8,0,4,0" Text="по:"/>
             <DatePicker SelectedDate="{Binding To}"/>
         </StackPanel>
 
         <ScrollViewer VerticalScrollBarVisibility="Auto">
             <StackPanel Margin="8">
-                <Expander Header="Products" IsExpanded="True"><DataGrid ItemsSource="{Binding Products}" AutoGenerateColumns="True"/></Expander>
-                <Expander Header="FX Rates"><DataGrid ItemsSource="{Binding FxRates}" AutoGenerateColumns="True"/></Expander>
-                <Expander Header="Purchases"><DataGrid ItemsSource="{Binding Purchases}" AutoGenerateColumns="True"/></Expander>
-                <Expander Header="Logistics"><DataGrid ItemsSource="{Binding Logistics}" AutoGenerateColumns="True"/></Expander>
-                <Expander Header="Sales"><DataGrid ItemsSource="{Binding Sales}" AutoGenerateColumns="True"/></Expander>
-                <Expander Header="Marketing"><DataGrid ItemsSource="{Binding Marketing}" AutoGenerateColumns="True"/></Expander>
-                <Expander Header="Other Costs"><DataGrid ItemsSource="{Binding OtherCosts}" AutoGenerateColumns="True"/></Expander>
-                <Expander Header="Inventory"><DataGrid ItemsSource="{Binding Inventory}" AutoGenerateColumns="True" IsReadOnly="True"/></Expander>
-                <Expander Header="Unit Economics"><DataGrid ItemsSource="{Binding UnitEconomics}" AutoGenerateColumns="True" IsReadOnly="True"/></Expander>
-                <Border Background="#222" Padding="8" Margin="0,10,0,0"><TextBlock Foreground="White" FontSize="18" Text="P&amp;L + KPI section (bound via charts/cards in next iteration)"/></Border>
+                <Expander Header="Товары" IsExpanded="True"><DataGrid ItemsSource="{Binding Products}" AutoGenerateColumns="True"/></Expander>
+                <Expander Header="Курсы валют"><DataGrid ItemsSource="{Binding FxRates}" AutoGenerateColumns="True"/></Expander>
+                <Expander Header="Закупки"><DataGrid ItemsSource="{Binding Purchases}" AutoGenerateColumns="True"/></Expander>
+                <Expander Header="Логистика"><DataGrid ItemsSource="{Binding Logistics}" AutoGenerateColumns="True"/></Expander>
+                <Expander Header="Продажи"><DataGrid ItemsSource="{Binding Sales}" AutoGenerateColumns="True"/></Expander>
+                <Expander Header="Маркетинг"><DataGrid ItemsSource="{Binding Marketing}" AutoGenerateColumns="True"/></Expander>
+                <Expander Header="Прочие расходы"><DataGrid ItemsSource="{Binding OtherCosts}" AutoGenerateColumns="True"/></Expander>
+                <Expander Header="Склад"><DataGrid ItemsSource="{Binding Inventory}" AutoGenerateColumns="True" IsReadOnly="True"/></Expander>
+                <Expander Header="Юнит-экономика"><DataGrid ItemsSource="{Binding UnitEconomics}" AutoGenerateColumns="True" IsReadOnly="True"/></Expander>
+                <Border Background="#222" Padding="8" Margin="0,10,0,0"><TextBlock Foreground="White" FontSize="18" Text="Раздел P&amp;L + KPI (графики/карточки будут подключены далее)"/></Border>
             </StackPanel>
         </ScrollViewer>
     </DockPanel>
